@@ -46,6 +46,8 @@ class SearchableDialog(
         AlertDialog.Builder(context).apply {
             SearchableDialogBinding.inflate(LayoutInflater.from(context)).run {
 
+                searchListAdapter = SearchableListAdapter(context, items)
+
                 rippleViewClose.apply {
                     if (cancelButtonText.isNotBlank()) {
                         text = cancelButtonText
@@ -64,14 +66,12 @@ class SearchableDialog(
                     }
                 }
 
-                searchListAdapter = SearchableListAdapter(context, items)
                 listView.apply {
                     adapter = searchListAdapter
-
-                    onItemClickListener = AdapterView.OnItemClickListener { _, v, _, _ ->
-                        val t = v.findViewById<TextView>(R.id.t1)
+                    onItemClickListener = AdapterView.OnItemClickListener { _, view, _, _ ->
+                        val text = view.findViewById<TextView>(R.id.t1).text.toString()
                         for (j in items.indices) {
-                            if (t.text.toString().equals(items[j].title, ignoreCase = true)) {
+                            if (text.equals(items[j].title, ignoreCase = true)) {
                                 position = j
                                 selected = items[position]
                             }
@@ -92,29 +92,21 @@ class SearchableDialog(
                         i: Int,
                         i1: Int,
                         i2: Int
-                    ) {
-
-                    }
+                    ) {}
 
                     override fun onTextChanged(
                         charSequence: CharSequence,
                         i: Int,
                         i1: Int,
                         i2: Int
-                    ) {
-
-                    }
+                    ) {}
 
                     override fun afterTextChanged(editable: Editable) {
-                        val filteredValues = arrayListOf<SearchableItem>()
-                        for (i in items.indices) {
-                            val item = items[i]
-                            if (item.title.lowercase(Locale.getDefault()).trim { it <= ' ' }
-                                    .contains(
-                                        searchBox.text.toString().lowercase(Locale.getDefault())
-                                            .trim { it <= ' ' })) {
-                                filteredValues.add(item)
-                            }
+                        val filteredValues = items.filter { item ->
+                            item.title.lowercase(Locale.getDefault()).trim { it <= ' ' }
+                                .contains(
+                                    searchBox.text.toString().lowercase(Locale.getDefault())
+                                        .trim { it <= ' ' })
                         }
                         searchListAdapter = SearchableListAdapter(context, filteredValues)
                         listView.adapter = searchListAdapter
