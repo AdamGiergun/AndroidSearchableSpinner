@@ -4,12 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 
-fun Context.toActivity(): Activity? {
-    if(this is Activity){
-        return this
+fun Context.toActivity(): Activity? =
+    when (this) {
+        is Activity -> this
+        is ContextWrapper -> this.baseContext.toActivity()
+        else -> null
     }
-    if(this is ContextWrapper){
-        return this.baseContext.toActivity()
-    }
-    return null
-}
