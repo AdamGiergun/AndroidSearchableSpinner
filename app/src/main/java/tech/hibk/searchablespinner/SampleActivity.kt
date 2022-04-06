@@ -61,19 +61,20 @@ class SampleActivity : AppCompatActivity() {
             spinner2.setSelection(2)
 
             showDialog.setOnClickListener {
-                SearchableDialog(this@SampleActivity,
+                SearchableDialog(
+                    this@SampleActivity,
                     items,
-                    "Day Night Dialog",
+                    getString(R.string.day_night_dialog),
                     { item, _ ->
                         Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
-                    }).show()
+                    }).show(this@SampleActivity)
             }
 
             showLightDialog.setOnClickListener {
                 SearchableDialog(
                     this@SampleActivity,
                     items,
-                    "Light Dialog",
+                    getString(R.string.light_dialog),
                     { item, _ ->
                         Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
                     },
@@ -82,7 +83,7 @@ class SampleActivity : AppCompatActivity() {
                         R.color.colorPrimary
                     ),
                     onlyLightTheme = true
-                ).show()
+                ).show(this@SampleActivity)
             }
 
 

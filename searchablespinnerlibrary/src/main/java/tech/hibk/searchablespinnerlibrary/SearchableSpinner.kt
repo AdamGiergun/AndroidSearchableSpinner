@@ -111,7 +111,10 @@ class SearchableSpinner : androidx.appcompat.widget.AppCompatSpinner, OnTouchLis
                 isSpinnerDialogOpen = true
                 if (event.action == MotionEvent.ACTION_UP) {
                     SearchableDialog(
-                        context, items, dialogTitle, { item, _ ->
+                        context,
+                        items,
+                        dialogTitle,
+                        { item, _ ->
                             adapter = ArrayAdapter<String>(context,
                                 android.R.layout.simple_spinner_item, items.map { it.title })
                             setSelection(items.indexOf(item))
@@ -119,7 +122,7 @@ class SearchableSpinner : androidx.appcompat.widget.AppCompatSpinner, OnTouchLis
                         dialogCancelButtonText,
                         dialogCancelButtonColor,
                         dialogOnlyLightTheme
-                    ).show()
+                    ).show(context)
                 }
                 return true
             }

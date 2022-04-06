@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/spinerTitle"
+        android:id="@+id/spinnerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
@@ -31,13 +31,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:inputType="text"
             android:singleLine="true"
             android:maxLines="1"
             android:imeOptions="actionDone"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:importantForAutofill="no" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="24dp"
@@ -54,14 +55,14 @@
         android:background="#BBB" />
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:divider="#BBB"
         android:dividerHeight="0.1dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/close"
+        android:id="@+id/ripple_view_close"
         style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

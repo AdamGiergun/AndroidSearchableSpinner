@@ -9,112 +9,124 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
+import tech.hibk.searchablespinnerlibrary.databinding.SearchableDialogBinding
+import java.util.*
+
+private const val TAG = "SearchableDialog"
 
 class SearchableDialog(
-    var context: Context,
-    var itens: List<SearchableItem>,
-    var title: String,
-    var listener: (item: SearchableItem, position: Int) -> Unit,
-    var cancelButtonText: String = "Cancel",
-    var cancelButtonColor: Int? = null,
-    var onlyLightTheme: Boolean = false
+    context: Context,
+    val items: List<SearchableItem>,
+    val titleString: String,
+    val listener: (item: SearchableItem, position: Int) -> Unit,
+    val cancelButtonText: String = context.getString(android.R.string.cancel),
+    val cancelButtonColor: Int? = null,
+    val onlyLightTheme: Boolean = false
 ) {
-    private val TAG = "SearchableDialog"
     private lateinit var alertDialog: AlertDialog
     var position: Int = 0
     var selected: SearchableItem? = null
 
-
     lateinit var searchListAdapter: SearchableListAdapter
-    lateinit var listView: ListView
+
     /***
      *
      * show the seachable dialog
      */
-    fun show() {
+    fun show(activityContext: Context) {
 
-        val c: Context
-        if (this.onlyLightTheme) {
-            c = ContextThemeWrapper(context, R.style.LightTheme)
-            context.setTheme(R.style.LightTheme)
+        val context = if (onlyLightTheme) {
+            activityContext.setTheme(R.style.LightTheme)
+            ContextThemeWrapper(activityContext, R.style.LightTheme)
         } else {
-            c = ContextThemeWrapper(context, R.style.DayNightTheme)
-            context.setTheme(R.style.DayNightTheme)
+            activityContext.setTheme(R.style.DayNightTheme)
+            ContextThemeWrapper(activityContext, R.style.DayNightTheme)
         }
 
-        val adb = AlertDialog.Builder(c)
-        val view = LayoutInflater.from(context).inflate(R.layout.searchable_dialog, null)
-        val rippleViewClose = view.findViewById(R.id.close) as TextView
-        val title = view.findViewById(R.id.spinerTitle) as TextView
-        if(this.title.isNotBlank()) {
-            title.text = this.title
-        }else{
-            title.visibility = View.GONE
-        }
+        AlertDialog.Builder(context).apply {
+            SearchableDialogBinding.inflate(LayoutInflater.from(context)).run {
 
-        listView = view.findViewById(R.id.list) as ListView
-
-        val searchBox = view.findViewById(R.id.searchBox) as EditText
-        searchListAdapter = SearchableListAdapter(context, itens)
-        listView.adapter = searchListAdapter
-        adb.setView(view)
-        alertDialog = adb.create()
-        alertDialog.setCancelable(true)
-
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, v, _, _ ->
-            val t = v.findViewById<TextView>(R.id.t1)
-            for (j in itens.indices) {
-                if (t.text.toString().equals(itens[j].title, ignoreCase = true)) {
-                    position = j
-                    selected = itens[position]
-                }
-            }
-            try {
-                listener(selected!!, position)
-            } catch (e: Exception) {
-                Log.e(TAG, e.message ?: e.toString())
-            }
-
-            alertDialog.dismiss()
-        }
-
-        searchBox.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int
-            ) {
-
-            }
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
-            }
-
-            override fun afterTextChanged(editable: Editable) {
-                val filteredValues = arrayListOf<SearchableItem>()
-                for (i in itens.indices) {
-                    val item = itens[i]
-                    if (item.title.toLowerCase().trim { it <= ' ' }.contains(searchBox.text.toString().toLowerCase().trim { it <= ' ' })) {
-                        filteredValues.add(item)
+                rippleViewClose.apply {
+                    if (cancelButtonText.isNotBlank()) {
+                        text = cancelButtonText
+                        cancelButtonColor?.let { setTextColor(it) }
+                        setOnClickListener { alertDialog.dismiss() }
+                    } else {
+                        visibility = View.GONE
                     }
                 }
-                searchListAdapter = SearchableListAdapter(context, filteredValues)
-                listView.adapter = searchListAdapter
-            }
-        })
 
-        if(cancelButtonText.isNotBlank()){
-            rippleViewClose.text = cancelButtonText
-            cancelButtonColor?.let { color ->
-                rippleViewClose.setTextColor(color)
-            }
+                spinnerTitle.apply {
+                    if (titleString.isNotBlank()) {
+                        text = titleString
+                    } else {
+                        visibility = View.GONE
+                    }
+                }
 
-            rippleViewClose.setOnClickListener { alertDialog.dismiss() }
-        }else{
-            rippleViewClose.visibility = View.GONE
+                searchListAdapter = SearchableListAdapter(context, items)
+                listView.apply {
+                    adapter = searchListAdapter
+
+                    onItemClickListener = AdapterView.OnItemClickListener { _, v, _, _ ->
+                        val t = v.findViewById<TextView>(R.id.t1)
+                        for (j in items.indices) {
+                            if (t.text.toString().equals(items[j].title, ignoreCase = true)) {
+                                position = j
+                                selected = items[position]
+                            }
+                        }
+                        try {
+                            listener(selected!!, position)
+                        } catch (e: Exception) {
+                            Log.e(TAG, e.message ?: e.toString())
+                        }
+
+                        alertDialog.dismiss()
+                    }
+                }
+
+                searchBox.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    ) {
+
+                    }
+
+                    override fun onTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    ) {
+
+                    }
+
+                    override fun afterTextChanged(editable: Editable) {
+                        val filteredValues = arrayListOf<SearchableItem>()
+                        for (i in items.indices) {
+                            val item = items[i]
+                            if (item.title.lowercase(Locale.getDefault()).trim { it <= ' ' }
+                                    .contains(
+                                        searchBox.text.toString().lowercase(Locale.getDefault())
+                                            .trim { it <= ' ' })) {
+                                filteredValues.add(item)
+                            }
+                        }
+                        searchListAdapter = SearchableListAdapter(context, filteredValues)
+                        listView.adapter = searchListAdapter
+                    }
+                })
+
+                setView(root)
+            }
+        }.create().run {
+            alertDialog = this
+            setCancelable(true)
+            show()
         }
-        alertDialog.show()
     }
 }
