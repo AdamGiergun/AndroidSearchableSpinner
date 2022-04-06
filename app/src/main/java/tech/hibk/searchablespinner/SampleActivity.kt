@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_sample.*
+import tech.hibk.searchablespinner.databinding.ActivitySampleBinding
 import tech.hibk.searchablespinnerlibrary.SearchableDialog
 import tech.hibk.searchablespinnerlibrary.SearchableItem
 
@@ -17,83 +17,91 @@ class SampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val items = List(100) { i ->
-            SearchableItem(i.toLong(),"Test-$i")
-             }
 
+        ActivitySampleBinding.inflate(layoutInflater).run {
+            setContentView(root)
 
-        setContentView(R.layout.activity_sample)
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
+            val items = List(100) { i ->
+                SearchableItem(i.toLong(), "Test-$i")
             }
 
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                spinner.selectedItem?.title?.let { title ->
-                    Toast.makeText(this@SampleActivity, title, Toast.LENGTH_SHORT).show()
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    spinner.selectedItem?.title?.let { title ->
+                        Toast.makeText(this@SampleActivity, title, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
 
-        spinner2.nothingSelectedText = "nothing selected"
-        spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {
+            spinner2.nothingSelectedText = "nothing selected"
+            spinner2.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
 
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                spinner2.selectedItem?.title?.let { title ->
-                    Toast.makeText(this@SampleActivity, title, Toast.LENGTH_SHORT).show()
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        spinner2.selectedItem?.title?.let { title ->
+                            Toast.makeText(this@SampleActivity, title, Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
+            spinner2.items = items
+
+            spinner2.setSelection(2)
+
+            showDialog.setOnClickListener {
+                SearchableDialog(this@SampleActivity,
+                    items,
+                    "Day Night Dialog",
+                    { item, _ ->
+                        Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
+                    }).show()
             }
-        }
-        spinner2.items = items
 
-        spinner2.setSelection(2)
-
-        showDialog.setOnClickListener {
-            SearchableDialog(this,
-                items,
-                "Day Night Dialog",
-                {item, _ ->
-                    Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
-                }).show()
-        }
-
-        showLightDialog.setOnClickListener {
-            SearchableDialog(this,
-                items,
-                "Light Dialog",
-                {item, _ ->
-                    Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
-                },
-                cancelButtonColor = ContextCompat.getColor(this, R.color.colorPrimary),
-                onlyLightTheme = true).show()
-        }
+            showLightDialog.setOnClickListener {
+                SearchableDialog(
+                    this@SampleActivity,
+                    items,
+                    "Light Dialog",
+                    { item, _ ->
+                        Toast.makeText(this@SampleActivity, item.title, Toast.LENGTH_SHORT).show()
+                    },
+                    cancelButtonColor = ContextCompat.getColor(
+                        this@SampleActivity,
+                        R.color.colorPrimary
+                    ),
+                    onlyLightTheme = true
+                ).show()
+            }
 
 
-        darkMode.setOnClickListener {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
+            darkMode.setOnClickListener {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
 
-        lightMode.setOnClickListener {
+            lightMode.setOnClickListener {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
 
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
-
-        moreInfo.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/henriquebk1/AndroidSearchableSpinner")))
+            moreInfo.setOnClickListener {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/AdamGiergun/AndroidSearchableSpinner")
+                    )
+                )
+            }
         }
     }
 }
