@@ -92,21 +92,21 @@ class SearchableDialog(
                         i: Int,
                         i1: Int,
                         i2: Int
-                    ) {}
+                    ) {
+                    }
 
                     override fun onTextChanged(
                         charSequence: CharSequence,
                         i: Int,
                         i1: Int,
                         i2: Int
-                    ) {}
+                    ) {
+                    }
 
                     override fun afterTextChanged(editable: Editable) {
                         val filteredValues = items.filter { item ->
-                            item.title.lowercase(Locale.getDefault()).trim { it <= ' ' }
-                                .contains(
-                                    searchBox.text.toString().lowercase(Locale.getDefault())
-                                        .trim { it <= ' ' })
+                            item.title.lowercaseAndTrim()
+                                .contains(searchBox.text.toString().lowercaseAndTrim())
                         }
                         searchListAdapter = SearchableListAdapter(context, filteredValues)
                         listView.adapter = searchListAdapter
@@ -121,4 +121,7 @@ class SearchableDialog(
             show()
         }
     }
+
+    private fun String.lowercaseAndTrim(): String =
+        lowercase(Locale.getDefault()).trim { it <= ' ' }
 }
