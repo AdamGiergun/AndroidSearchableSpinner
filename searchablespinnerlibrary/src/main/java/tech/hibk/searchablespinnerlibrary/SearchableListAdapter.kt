@@ -10,7 +10,8 @@ import android.widget.TextView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SearchableListAdapter(context: Context, objects: List<SearchableItem>) : ArrayAdapter<SearchableItem>(context, R.layout.item_layout) {
+class SearchableListAdapter(context: Context, objects: List<SearchableItem>) :
+    ArrayAdapter<SearchableItem>(context, R.layout.item_layout) {
     var searchListItems: MutableList<SearchableItem> = objects as MutableList<SearchableItem>
     var suggestions: MutableList<SearchableItem> = ArrayList()
     var filter = CustomFilter()
@@ -46,12 +47,15 @@ class SearchableListAdapter(context: Context, objects: List<SearchableItem>) : A
             suggestions.clear()
             constraint.let {
                 for (i in searchListItems.indices) {
-                    if (searchListItems[i].title.toLowerCase(Locale.ENGLISH).contains(constraint)) { // Compare item in original searchListItems if it contains constraints.
+                    if (searchListItems[i].title.lowercase(Locale.ENGLISH)
+                            .contains(constraint)
+                    ) { // Compare item in original searchListItems if it contains constraints.
                         suggestions.add(searchListItems[i]) // If TRUE add item in Suggestions.
                     }
                 }
             }
-            val results = FilterResults() // Create new Filter Results and return this to publishResults;
+            val results =
+                FilterResults() // Create new Filter Results and return this to publishResults;
             results.values = suggestions
             results.count = suggestions.size
             return results
@@ -65,5 +69,4 @@ class SearchableListAdapter(context: Context, objects: List<SearchableItem>) : A
             }
         }
     }
-
 }

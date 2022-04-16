@@ -1,14 +1,15 @@
 package tech.hibk.searchablespinnerlibrary
 
+import android.app.AlertDialog
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ContextThemeWrapper
+import android.widget.AdapterView
+import android.widget.TextView
 import tech.hibk.searchablespinnerlibrary.databinding.SearchableDialogBinding
 import java.util.*
 
